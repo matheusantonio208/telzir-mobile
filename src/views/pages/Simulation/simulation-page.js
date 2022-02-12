@@ -1,61 +1,63 @@
 import React, { useState, useRef } from 'react';
-import { Image, Alert, Dimensions, Animated } from 'react-native';
+import {
+  Image,
+  Alert,
+  Dimensions,
+  Animated,
+  ScrollView,
+  Text,
+} from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 
-import api from '#services/biomeApi.js';
+import api from '#services/api.js';
 
 import Input from '#components/Input/index.js';
 
 import imageLandingPage from '../../../assets/img/landing-page.png';
-import image3 from '../../../assets/img/talkMore120Img.png';
-import image1 from '../../../assets/img/talkMore30Img.png';
-import image2 from '../../../assets/img/talkMore60Img.png';
+import talkMore120Img from '../../../assets/img/talkMore120Img.png';
+import talkMore30Img from '../../../assets/img/talkMore30Img.png';
+import talkMore60Img from '../../../assets/img/talkMore60Img.png';
 import { formatPrice } from '../../../utils/format-numbers-util.js';
 import {
-  ImageContainer,
-  ImageItem,
-  TextContainer,
-  Title,
-  OriginalPrice,
-  PlanPrice,
-  TextBody,
-  Button,
-  ButtonContainer,
-} from '../PlansPrices/plansPrices-style.js';
-import {
-  ScrollView,
   Headline,
   HeadlineText,
   Form,
   Select,
-  TextSelect,
+  Label,
   HeadlineContainer,
-  Submit,
   TextButton,
   Container,
+  ImageCardContainer,
+  ImageCard,
+  TextCard,
+  TitleCard,
+  PlanPrice,
+  TextBody,
+  Button,
+  ButtonContainer,
 } from './simulation-styles.js';
 
-export default function SingUp({ navigation }) {
+export default function Simulation() {
+  const { width, height } = Dimensions.get('screen');
+  const imageH = width * 1.54;
+  const scrollX = React.useRef(new Animated.Value(0)).current;
+
   const areaCodes = ['011', '016', '017', '018'];
 
   const [callDuration, setCallDuration] = useState('');
   const [areaCodeOrigin, setAreaCodeOrigin] = useState('');
   const [areaCodeDestiny, setAreaCodeDestiny] = useState('');
-
   const [prices, setPrices] = useState('');
+
   const [ref, setRef] = useState(null);
 
   const simulationSection = useRef();
 
-  const { width, height } = Dimensions.get('screen');
-  const imageW = width;
-  const imageH = imageW * 1.54;
-  const scrollX = React.useRef(new Animated.Value(0)).current;
-  const images = [
+  const planPricesCards = [
     {
       originalPrice: prices.withoutTalkMore,
       fee: prices.fee,
-      image: image1,
+      image: talkMore30Img,
       title: 'FaleMais30',
       minutes: 30,
       planPrice: prices.talkMore30,
@@ -63,7 +65,7 @@ export default function SingUp({ navigation }) {
     {
       originalPrice: prices.withoutTalkMore,
       fee: prices.fee,
-      image: image2,
+      image: talkMore60Img,
       title: 'FaleMais60',
       minutes: 60,
       planPrice: prices.talkMore60,
@@ -71,7 +73,7 @@ export default function SingUp({ navigation }) {
     {
       originalPrice: prices.withoutTalkMore,
       fee: prices.fee,
-      image: image3,
+      image: talkMore120Img,
       title: 'FaleMais120',
       minutes: 120,
       planPrice: prices.talkMore120,
@@ -80,12 +82,12 @@ export default function SingUp({ navigation }) {
 
   const handleSubmit = async () => {
     try {
-      const response = await api.post('/simulation', {
+      const { data } = await api.post('/simulation', {
         areaCodeOrigin,
         areaCodeDestiny,
         callDuration,
       });
-      const { data } = response;
+
       setPrices(data);
       ref.scrollTo({
         x: 0,
@@ -124,17 +126,17 @@ export default function SingUp({ navigation }) {
 
         <Form>
           <Select>
-            <TextSelect>DDD de Origem</TextSelect>
+            <Label>DDD de Origem</Label>
             <SelectDropdown
               data={areaCodes}
               defaultButtonText="DDD"
-              onSelect={(selectedItem, index) => {
-                setAreaCodeOrigin(selectedItem);
+              onSelect={(selectedAreaCodeOrigin) => {
+                setAreaCodeOrigin(selectedAreaCodeOrigin);
               }}
             />
           </Select>
           <Select>
-            <TextSelect>DDD de Destino</TextSelect>
+            <Label>DDD de Destino</Label>
             <SelectDropdown
               data={areaCodes}
               defaultButtonText="DDD"
@@ -145,29 +147,30 @@ export default function SingUp({ navigation }) {
                 marginTop: 15,
                 marginBottom: 15,
               }}
-              onSelect={(selectedItem, index) => {
-                setAreaCodeDestiny(selectedItem);
+              onSelect={(selectedAreaCodeDestiny) => {
+                setAreaCodeDestiny(selectedAreaCodeDestiny);
               }}
             />
           </Select>
-          <TextSelect>Duração em Minutos</TextSelect>
+          <Label>Duração em Minutos</Label>
           <Input
             autoCorrect={false}
             keyboardType="numeric"
             autoCapitalize="none"
             placeholder="Duração"
-            returnKeyType="next"
-            value={callDuration}
+            onSubmitEditing={() => handleSubmit()}
             onChangeText={setCallDuration}
+            value={callDuration}
           />
 
-          <Submit onPress={() => handleSubmit()}>
+          <Button onPress={() => handleSubmit()} color="yellow">
             <TextButton>Simular</TextButton>
-          </Submit>
+          </Button>
         </Form>
       </Container>
+
       <Animated.FlatList
-        data={images}
+        data={planPricesCards}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
           { useNativeDriver: true },
@@ -178,31 +181,32 @@ export default function SingUp({ navigation }) {
         showsHorizontalScrollIndicator={false}
         ref={simulationSection}
         renderItem={({ item }) => (
-          <ImageContainer width={width} height={height}>
-            <ImageItem
+          <ImageCardContainer width={width} height={height}>
+            <ImageCard
               source={item.image}
-              width={imageW}
+              width={width}
               height={imageH}
               style={{ resizeMode: 'center' }}
             />
-            <TextContainer width={width}>
-              <Title>{item.title}</Title>
-              <OriginalPrice>
-                De {formatPrice(item.originalPrice)} por
-              </OriginalPrice>
+            <TextCard width={width}>
+              <TitleCard>{item.title}</TitleCard>
+              <Text>De {formatPrice(item.originalPrice)} por</Text>
               <PlanPrice>{formatPrice(item.planPrice)}</PlanPrice>
               <TextBody>
                 Com o plano {item.title}, você fala por {item.minutes} minutos e
                 só paga {formatPrice(item.fee)} + 10% pelos minutos excedentes
                 através dos DDD's {areaCodeOrigin} e {areaCodeDestiny}
               </TextBody>
-            </TextContainer>
+            </TextCard>
             <ButtonContainer>
-              <Button>
+              <Button color="yellow" size="sm">
                 <TextButton>Contratar</TextButton>
               </Button>
+              <Button color="blue" size="sm">
+                <TextButton>Saber Mais</TextButton>
+              </Button>
             </ButtonContainer>
-          </ImageContainer>
+          </ImageCardContainer>
         )}
       />
     </ScrollView>

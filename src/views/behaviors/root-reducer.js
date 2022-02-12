@@ -1,7 +1,7 @@
-import {combineReducers} from 'redux';
+import { combineReducers } from 'redux';
 
-import auth from './auth-agregador/auth-reducer.js';
+import example from './example-agregador/example-reducer.js';
 
 export default combineReducers({
-  auth,
+  example,
 });
