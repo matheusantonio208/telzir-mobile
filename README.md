@@ -21,6 +21,7 @@ Exercício LOLDesginer - Módulo Mobile (React Native)
   - [### :bookmark_tabs:Table of Contents](#-bookmark_tabstable-of-contents)
   - [### ⛩️ Philosophy](#-️-philosophy)
   - [### :arrow_forward: Get Started](#-arrow_forward-get-started)
+  - [### :bug: Bugs and feature requests](#-bug-bugs-and-feature-requests)
 
 
 ### ⛩️ Philosophy
@@ -68,4 +69,13 @@ We aim at the security of information transferred from end to end through the ap
 
 <p align="center">
 Or click in <a href="https://gitpod.io/#https://github.com/matheusantonio208/telzir-mobile" target="__blank"><img src="https://img.shields.io/badge/Start-Gitpod-blue?logo=gitpod" alt="Gitpod Ready-to-Code"></a>
+</p>
+
+### :bug: Bugs and feature requests
+---
+Have a bug or a feature request? Please first read the issue guidelines and search for existing and closed issues. If your problem or idea is not addressed yet, <a href="https://github.com/matheusantonio208/telzir-api/issues/new">please open a new issue</a>.
+
+---
+<p align="center">
+Make with ❤️ by Matheus Antonio
 </p>
